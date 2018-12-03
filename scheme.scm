@@ -12,8 +12,8 @@ name). Show examples of defining and using named functions.|#
 (define sq (lambda (n) (* n n)))
 (pp (sq))
 	;;; prints out sq
-	#| <PROCEDURE SQ> =
-	        (LAMBDA (N) (* N N))|#
+	 <PROCEDURE SQ> =
+	        (LAMBDA (N) (* N N))
 (sq 32)
 
 #| The first class object may be stored in data structures. Show an example of a
@@ -22,23 +22,23 @@ data structure (e.g. a list) that contains functions.|#
 (define fl (list (lambda (n) (* n n)) (lambda (a b) (sqrt (* a b)))))
 
 fl
-	#| <PROCEDURE> <PROCEDURE> |#
+	 <PROCEDURE> <PROCEDURE> 
 
 (cdr fl)
+	 <PROCEDURE> 
 
-	#| <PROCEDURE> |#
 ((car fl) 32)
 
 (pp (car fl))
-	#| <PROCEDURE> =
-	      (LAMBDA (N) (* N N)) |#
+	 <PROCEDURE> =
+	      (LAMBDA (N) (* N N)) 
 
 (pp (cadr fl))
-	#| <PROCEDURE>
-	      (LAMBDA (A B) (SQRT (* A B))) |#
+	 <PROCEDURE>
+	      (LAMBDA (A B) (SQRT (* A B))) 
 
 (pp (cdr fl))
-	#| <PROCEDURE> |#
+	 <PROCEDURE> 
 
 ((cadr fl) 4 9)
 
@@ -75,17 +75,17 @@ an example of passing function as an argument to another function. |#
 ((lambda (op arg) (op arg)) (car fl) 32)
 
 fl
-#| <PROCEDURE> <PROCEDURE> |#
+ <PROCEDURE> <PROCEDURE> 
 
 (display fl)
-#| <PROCEDURE> <PROCEDURE> |#
+ <PROCEDURE> <PROCEDURE> 
 
 (display (car fl))
-#| <PROCEDURE> |#
+ <PROCEDURE> 
 
 (pp (car fl))
-#| <PROCEDURE> = 
-		(LAMBDA (N) (* N N)) |# 
+ <PROCEDURE> = 
+		(LAMBDA (N) (* N N))  
 
 (define geo (cadr fl))
 
@@ -97,13 +97,13 @@ of returning a function as a result of another function. |#
 (define compose (lambda (f g) (lambda (x) (f (g x)))))
 
 (pp compose)
-#| <PROCEDURE COMPOSE> = 
+ <PROCEDURE COMPOSE> = 
 		(LAMBDA (F G)
-			(LAMBDA (X) (F (G X)) |# 
+			(LAMBDA (X) (F (G X))  
 
 (pp sq)
-#| <PROCEDURE SQ> = 
-		(LAMBDA (N) (* N N)) |#
+ <PROCEDURE SQ> = 
+		(LAMBDA (N) (* N N)) 
 
 ((compose sq sq) 2)
 
@@ -116,18 +116,18 @@ of returning a function as a result of another function. |#
 (define power4 (compose (car fl)(car fl)))
 
 (pp power4)
-#| <PROCEDURE COMPOSE> =
-		(LAMBDA (X) (F (G X))) |#
+ <PROCEDURE COMPOSE> =
+		(LAMBDA (X) (F (G X))) 
 
 (power4 2)
 
 (define f (read))
 
 (display f)
-#| (LAMBDA (N) (* N N)) |#
+ (LAMBDA (N) (* N N)) 
 
 f
-#| (LAMBDA (N) (* N N)) |#
+ (LAMBDA (N) (* N N)) 
 
 (procedure? f)
 
@@ -136,11 +136,11 @@ f
 ((eval f) 32)
 
 (pp (eval f))
-#| <PROCEDURE> =
-		(LAMBDA (N) (* N N)) |#
+ <PROCEDURE> =
+		(LAMBDA (N) (* N N)) 
 
 (pp f)
-#| (LAMBDA (N) (* N N)) |#
+ (LAMBDA (N) (* N N)) 
 
 #| The first class object may be readable and printable. Show examples
 of reading functions from the keyboard, reading functions from a file, 
@@ -336,8 +336,125 @@ decimal digits. |#
 				(display "Maximum: f (")
 				(disp (/ (+ x1 x2) 2) 4)
 				(display ") = ")
-				
+				(disp (f (/ (+ x1 x2) 2)) 4))
+			(else (let ((a1 (+x1 (/ (-x2 x1) 3)))
+						(a2 (-x2 (/ (-x2 x1) 3))))
+					(if (< (f a1) (f a2)))
+						(fmax f a1 x2)
+						(fmax f x1 a2))
+					)
+				)
+			)
+		)
+	)
+	
+(fmax cos -1 1)
+#| Maximum: f(0) = 1 |#
 
+(fmax (lambda (x) (+ x (/ 1 x))) 0.01 100)
+#| Maximum: f(100) = 100.01 |#
 
+(fmax (lambda (x) (- (/ -1 x) x)) 0.01 100)
+#| Maximum: f(1) = -2 |#
 
+(fmax (lambda (x) x) 0 10)
+#| Maximum: f(10) = 10 |# 
 
+(fmax (lambda (x) (minus x)) 0 10)
+#| Maximum: f(0) = 0 |#
+
+#|****************************************************************************|#
+
+#| Develop a program that computes the scalar product of two vectors. The program must
+not accept vectors having different size (in such a case print an error message). For example:
+
+>(scalar-product '#(1 2 3)' '#(2 1 1)')
+7
+> (scalar-product '#(1 2 3)' '#(1 2 3 4 5)')
+ERROR: Different sizes of vectors! 
+|#
+
+#| Write a program in iterative style using the DO loop. |#
+
+#|******************ITERATIVE VERSION******************|#
+
+#<PROCEDURE SP> = 
+ (LAMBDA (V1 V2)
+ 	(cond ((<> (VECTOR-LENGTH V1)(VECTOR-LENGTH V2))
+ 				(display "Error: different sizes of vector!"))
+ 			((ZERO? (VECTOR-LENGTH V1))
+ 				(display "Error: empty vectors!"))
+ 			(else (let ((S 0))
+ 					(DO ((I 0 (ADD1 I)))
+ 							((>= I (VECTOR-LENGTH V1)) (display S))
+ 							(set! S 
+ 								(+ S (* (VECTOR-REF V1 I) (VECTOR-REF V2 I)
+ 								)
+ 							)
+ 						)
+ 					)
+ 				)
+ 			)
+ 		)
+ 	)
+(sp '#() '#())
+
+(sp '#(1 2 3) '#(1 2))
+
+(sp '#(1 2 3) '#(2 1 1))
+
+(sp '#(1 2 3 4) '#(-4 -3 2 1))
+
+#|******************RECURSIVE VERSION WITH LISTS******************|#
+
+(pp splist)
+
+#<PROCEDURE SPLIST> = 
+	(LAMBDA (LIST1 LIST2)
+		(cond ((null? (cdr LIST1)) (*car LIST1) (car LIST2)))
+			(else (+ (* (car LIST1) (car LIST2))
+					(SPLIST (cdr LIST1) (cdr (LIST2)))
+				)
+			)
+		)
+
+(pp sprec)
+
+#<PROCEDURE SPREC> = 
+	(LAMBDA (V1 V2)
+		(cond ((<> (VECTOR-LENGTH V1) (VECTOR-LENGTH V2))
+				(display "Error: different sizes of vectors!"))
+			((ZERO? (VECTOR-LENGTH V1))
+				(display "Error: empty vectors!"))
+					(else (SPLIST (VECTOR -> LIST V1) (VECTOR -> LIST V2)
+						)
+				)
+			)
+		)
+	
+#|******************RECURSIVE VERSION WITH VECTORS******************|#
+
+(pp dot-product)
+
+#<PROCEDURE DOT-PRODUCT> = 
+	(LAMBDA (V1 V2 N)
+		(cond ((= 1 N) (* (VECTOR-REF V1 0) (VECTOR-REF V2 0)))
+			(else (+ (* (VECTOR-REF V1 (SUB1 N))
+						(VECTOR-REF V2 (SUB1 N)))
+					(DOT-PRODUCT V1 V2 (SUB1 N))
+					)
+			)
+		)
+	)
+
+(pp spvec)
+#<PROCEDURE SPVEC> = 
+	(LAMBDA (V1 V2)
+		(cond ((<> (VECTOR-LENGTH V1) (VECTOR-LENGTH V2))
+				(display "Error: different sizes of vectors!"))
+			((ZERO? (VECTOR-LENGTH V1))
+				(display "Error: empty vectors!"))
+			(else (DOT-PRODUCT V1 V2 (VECTOR-LENGTH V1))
+				)
+			)
+		)
